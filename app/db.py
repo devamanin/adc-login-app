@@ -14,9 +14,11 @@ class user:
     def getItem(self, email):
         usercoll = datab.collection('user')
         dict = usercoll.document(email).get().to_dict()
-        self.fullname = dict['fullname']
-        self.password = dict['password']
-        return dict
+        if dict:
+            self.fullname = dict['fullname']
+            self.password = dict['password']
+            return dict
+        return 0
 
     def save(self, name, email, password):
         usercoll = datab.collection('user')

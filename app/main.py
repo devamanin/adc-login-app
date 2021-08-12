@@ -1,13 +1,15 @@
+from app.db import user
 from os import stat
 from flask import Flask, json, render_template, request, jsonify, url_for, redirect
 import flask_login
+from werkzeug.security import generate_password_hash, check_password_hash
 
 app = Flask(__name__)
 app.secret_key = "super secret string"
 login_manager = flask_login.LoginManager()
 login_manager.init_app(app)
-users = {'devamanin': {'name': 'Aman',
-                       'password': 'aman1', 'email': 'aman@gmail.com'}}
+# users = {'devamanin': {'name': 'Aman',
+#                        'password': 'aman1', 'email': 'aman@gmail.com'}}
 
 
 class User(flask_login.UserMixin):
@@ -16,8 +18,8 @@ class User(flask_login.UserMixin):
 
 @login_manager.user_loader
 def user_loader(username):
-    if username not in users:
-        return
+    # if username not in users:
+    #     return
 
     user = User()
     user.id = username
@@ -35,39 +37,47 @@ def login():
     from app.db import user
     content = request.get_json()
     userctx = user()
-    userName = userctx.getItem(content['username'])
-    print(userName)
     if (content):
         username = content['username']
         password = content['password']
     else:
         username = request.form['username']
         password = request.form['password']
-    # username = content['username']
-    # password = content['password']
-    # print(content['username'])
-    # username = 'devamanin'
-    # password = 'aman1'
-    if username in users:
-        if password == users[username]['password']:
-            username = username
-            name = users[username]['name']
-            user = User()
-            user.id = username
-            flask_login.login_user(user)
-            return jsonify({'status': 'success'})
-            # return redirect(url_for('user'))
-        else:
-            return jsonify({'status': 'failed'})
+    userName = userctx.getItem(content['username'])
+    passwordCheck = check_password_hash(userctx.password, password)
+    if userName and passwordCheck:
+        username = username
+        name = userctx.fullname
+        user = User()
+        user.id = username
+        flask_login.login_user(user)
+        return jsonify({'status': 'success'})
     else:
         return jsonify({'status': 'failed'})
+    # if username in users:
+    #     if password == users[username]['password']:
+    #         username = username
+    #         name = users[username]['name']
+    #         user = User()
+    #         user.id = username
+    #         flask_login.login_user(user)
+    #         return jsonify({'status': 'success'})
+    #         # return redirect(url_for('user'))
+    #     else:
+    #         return jsonify({'status': 'failed'})
+    # else:
+    #     return jsonify({'status': 'failed'})
         # return render_template('index/user.html', user={'username': username, 'name': name})
 
 
 @app.route('/user')
 @flask_login.login_required
 def user():
-    return render_template('index/user.html', user={'username': flask_login.current_user.id, 'name': users[flask_login.current_user.id]['name']})
+    from app.db import user
+    userctx = user()
+    userName = userctx.getItem(flask_login.current_user.id)
+    fullname = userctx.fullname
+    return render_template('index/user.html', user={'username': flask_login.current_user.id, 'name': fullname})
 
 
 @app.route('/logout', methods=['POST'])
@@ -82,14 +92,11 @@ def register():
     fullname = str(content['fullname'])
     username = str(content['username'])
     password = str(content['password'])
-    # print(fullname, username, password)
+    passwordHash = generate_password_hash(password, 'sha256')
     if (len(fullname) != 0 or len(username) != 0 or len(password) != 0):
         from app.db import user
         userCreate = user()
-        userCreate.save(fullname, username, password)
-        # setUser(fullname, username, password)
-#         userCreate = user()
-# userCreate.save('aman', 'devamanin', 'aman1')
+        userCreate.save(fullname, username, passwordHash)
         return jsonify({'status': 'success'})
     else:
         return jsonify({'status': 'failed'})
