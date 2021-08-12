@@ -8,8 +8,6 @@ app = Flask(__name__)
 app.secret_key = "super secret string"
 login_manager = flask_login.LoginManager()
 login_manager.init_app(app)
-# users = {'devamanin': {'name': 'Aman',
-#                        'password': 'aman1', 'email': 'aman@gmail.com'}}
 
 
 class User(flask_login.UserMixin):
@@ -54,20 +52,6 @@ def login():
         return jsonify({'status': 'success'})
     else:
         return jsonify({'status': 'failed'})
-    # if username in users:
-    #     if password == users[username]['password']:
-    #         username = username
-    #         name = users[username]['name']
-    #         user = User()
-    #         user.id = username
-    #         flask_login.login_user(user)
-    #         return jsonify({'status': 'success'})
-    #         # return redirect(url_for('user'))
-    #     else:
-    #         return jsonify({'status': 'failed'})
-    # else:
-    #     return jsonify({'status': 'failed'})
-        # return render_template('index/user.html', user={'username': username, 'name': name})
 
 
 @app.route('/user')
