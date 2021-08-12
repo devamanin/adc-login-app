@@ -1,0 +1,109 @@
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/style.css">
+
+    <title>Home Page</title>
+</head>
+
+<body>
+    <nav>
+        <div class="branding">
+            <span class="brand-name">ADC</span>
+        </div>
+        <div class="nav-bar">
+            <ul class="nav-menu">
+                <li>
+                    <span id="home">Home</span>
+                </li>
+                {% if user %}
+                <li>
+                    <span class=logoutButton>Logout</span>
+                </li>
+                {% else %}
+                <li>
+                    <span class="logButton">Login/Register</span>
+                </li>
+                {% endif %}
+            </ul>
+        </div>
+        <div class="hr-line"></div>
+    </nav>
+    <main id="main">
+        <!-- <div class="container-box">
+            <div class="login-box-container">
+                <span class="error">Wrong username and password</span>
+                <div class="username-container">
+                    <input type="text" name="username" id="username" placeholder=" ">
+                    <div class="placeholder-text">
+                        <span>Username</span>
+                    </div>
+                </div>
+                <div class="password-container">
+                    <input type="password" name="password" id="password" placeholder=" ">
+                    <div class="placeholder-text">
+                        <span>Password</span>
+                    </div>
+                </div>
+                <div class="login-button-container">
+                    <input type="button" value="Login">
+                </div>
+                <div class="register-switch-container">
+                    <a>New here? Create an account</a>
+                </div>
+            </div>
+        </div> -->
+        <!-- <div class="container-box" style="display: none;">
+            <div class="signup-box-container">
+                <div class="fullname-container">
+                    <input type="text" name="fullname" id="fullname" placeholder=" ">
+                    <div class="placeholder-text">
+                        <span>Fullname</span>
+                    </div>
+                </div>
+                <div class="email-container">
+                    <input type="email" name="email" id="email" placeholder=" ">
+                    <div class="placeholder-text">
+                        <span>Email</span>
+                    </div>
+                </div>
+                <div class="password-container">
+                    <input type="password" name="password" id="password" placeholder=" ">
+                    <div class="placeholder-text">
+                        <span>Password</span>
+                    </div>
+                </div>
+                <div class="signup-button-container">
+                    <input type="button" value="Create an account">
+                </div>
+                <div class="login-switch-container">
+                    <a>Already have a account? Login</a>
+                </div>
+            </div>
+        </div> -->
+        <div class="heading">
+            <span>Simple Login Webapp</span>
+        </div>
+        {% if user %}
+        <div class="login-container">
+            <span>Hey {{user.name}}!, You loggedin successfully. Your user id is {{user.username}}.</span>
+        </div>
+        {% else %}
+        <div class="container">
+            <span>Welcome to the simple login web app. This demonstrates to you how to make users able to login, logout
+                and register. Your username is your email id.
+            </span>
+        </div>
+        {% endif %}
+    </main>
+    <footer>
+        <span>Made with <span class="heart">&#10084;</span> by <a href="https://www.linkedin.com/in/devamanin/"
+                class="footer-link">@aman</a></span>
+    </footer>
+    <script src="/static/script.js"></script>
+</body>
+
+</html>
