@@ -36,19 +36,19 @@ const loginContainer = () => {
     <div class="login-box-container">
     <span class="error">Wrong username and password</span>
         <div class="username-container">
-            <input type="text" name="username" id="username" placeholder=" ">
+            <input type="text" name="username" id="username" placeholder=" " required>
             <div class="placeholder-text">
                 <span>Username</span>
             </div>
         </div>
         <div class="password-container">
-            <input type="password" name="password" id="password" placeholder=" ">
+            <input type="password" name="password" id="password" placeholder=" " required>
             <div class="placeholder-text">
                 <span>Password</span>
             </div>
         </div>
         <div class="login-button-container">
-            <input type="button" value="Login" id="login-button">
+            <button type="button" id="login-button" class="button"><span class="button__text">Login</span></button>
         </div>
         <div class="register-switch-container">
             <a>New here? Create an account</a>
@@ -66,53 +66,59 @@ const loginContainer = () => {
       }
     }
   });
-  //   let jsonData = {
-  //     username: document.getElementById("username").value,
-  //     password: document.getElementById("password").value,
-  //   };
   document
     .getElementById("login-button")
     .addEventListener("click", function () {
+      document.getElementById("username").style.borderColor =
+        "rgb(179, 179, 179)";
+      document.getElementById("password").style.borderColor =
+        "rgb(179, 179, 179)";
       let jsonData = {
         username: document.getElementById("username").value,
         password: document.getElementById("password").value,
       };
-      fetch("/login", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(jsonData),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          if (data) {
-            if (data["status"] == "success") {
-              window.location = "/user";
-            } else {
-              document.getElementsByClassName("error")[0].style.visibility =
-                "visible";
+      console.log(jsonData["username"].length);
+      if (
+        jsonData["username"].length !== 0 &&
+        jsonData["password"].length !== 0
+      ) {
+        document
+          .getElementById("login-button")
+          .classList.add("button--loading");
+        fetch("/login", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(jsonData),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data) {
+              if (data["status"] == "success") {
+                window.location = "/user";
+              } else {
+                document.getElementsByClassName("error")[0].style.visibility =
+                  "visible";
+              }
             }
-          }
-        });
-      //   loginRequest("/login", jsonData);
+            document
+              .getElementById("login-button")
+              .classList.remove("button--loading");
+          });
+      } else {
+        if (jsonData["username"].length === 0) {
+          document.getElementById("username").style.borderColor = "red";
+          document.getElementById("username").style.borderWidth = "2px";
+          document.getElementById("username").style.borderStyle = "solid";
+        }
+        if (jsonData["password"].length === 0) {
+          document.getElementById("password").style.borderColor = "red";
+          document.getElementById("password").style.borderWidth = "2px";
+          document.getElementById("password").style.borderStyle = "solid";
+        }
+      }
     });
-
-  //       fetch("/login", {
-  //         method: "POST",
-  //         headers: {
-  //           "Content-Type": "application/json",
-  //         },
-  //         body: JSON.stringify(jsonData),
-  //       })
-  //         .then((response) => response.json())
-  //         .then((data) => {
-  //           console.log("Success: ", data);
-  //         })
-  //         .catch((error) => {
-  //           console.error("Error:", error);
-  //         });
-  //     });
 };
 if (logButton) {
   logButton.addEventListener("click", loginContainer);
@@ -122,17 +128,13 @@ const signupContainer = () => {
   if (main.contains(document.getElementsByClassName("container-box")[0])) {
     document.getElementsByClassName("container-box")[0].remove();
   }
-  //   if (document.getElementsByClassName("container-box")[0]) {
-  //   }
   let containerBox = document.createElement("div");
   containerBox.classList.add("container-box");
-
-  //   let containerBox = document.getElementsByClassName("container-box")[0];
   containerBox.innerHTML = ` 
     <div class="signup-box-container">
     <span class="error">Somethin went wrong.</span>
         <div class="fullname-container">
-            <input type="text" name="fullname" id="fullname" placeholder=" ">
+            <input type="text" name="fullname" id="fullname" placeholder=" " required>
             <div class="placeholder-text">
                 <span>Fullname</span>
             </div>
@@ -144,13 +146,13 @@ const signupContainer = () => {
             </div>
         </div>
         <div class="password-container">
-            <input type="password" name="password" id="password" placeholder=" ">
+            <input type="password" name="password" id="password" placeholder=" " required>
             <div class="placeholder-text">
                 <span>Password</span>
             </div>
         </div>
         <div class="signup-button-container">
-            <input type="button" value="Create an account" id="signup-submit">
+            <button type="button" value="Create an account" id="signup-submit" class="button"><span class="button__text">Create an account</span></button>
         </div>
         <div class="login-switch-container">
             <a>Already have a account? Login</a>
@@ -163,33 +165,62 @@ const signupContainer = () => {
   document
     .getElementById("signup-submit")
     .addEventListener("click", function () {
+      document.getElementById("fullname").style.borderColor =
+        "rgb(179, 179, 179)";
+      document.getElementById("email").style.borderColor = "rgb(179, 179, 179)";
+      document.getElementById("password").style.borderColor =
+        "rgb(179, 179, 179)";
+
       let jsonData = {
         fullname: document.getElementById("fullname").value,
         username: document.getElementById("email").value,
         password: document.getElementById("password").value,
       };
-      fetch("/register", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(jsonData),
-      })
-        .then((response) => response.json())
-        .then((data) => {
-          if (data["status"] == "success") {
-            let error = document.getElementsByClassName("error")[0];
-            error.style.backgroundColor = "green";
-            error.style.visibility = "visible";
-            error.innerHTML = "Account created successfully";
-            setTimeout(function () {
-              document.getElementsByClassName("container-box")[0].remove();
-            }, 600);
-          } else {
-            let error = document.getElementsByClassName("error")[0];
-            error.style.visibility = "visible";
-          }
-        });
+      if (
+        jsonData["fullname"].length !== 0 &&
+        jsonData["username"].length !== 0 &&
+        jsonData["password"].length !== 0
+      ) {
+        document
+          .getElementById("signup-submit")
+          .classList.add("button--loading");
+        fetch("/register", {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(jsonData),
+        })
+          .then((response) => response.json())
+          .then((data) => {
+            if (data["status"] == "success") {
+              let error = document.getElementsByClassName("error")[0];
+              error.style.backgroundColor = "green";
+              error.style.visibility = "visible";
+              error.innerHTML = "Account created successfully";
+              let signupSubmit = document.getElementById("signup-submit");
+              signupSubmit.classList.remove("button--loading");
+              setTimeout(function () {
+                document.getElementsByClassName("container-box")[0].remove();
+              }, 600);
+            } else {
+              let error = document.getElementsByClassName("error")[0];
+              error.style.visibility = "visible";
+              let signupSubmit = document.getElementById("signup-submit");
+              signupSubmit.classList.remove("button--loading");
+            }
+          });
+      } else {
+        if (jsonData["fullname"].length === 0) {
+          document.getElementById("fullname").style.borderColor = "red";
+        }
+        if (jsonData["username"].length === 0) {
+          document.getElementById("email").style.borderColor = "red";
+        }
+        if (jsonData["password"].length === 0) {
+          document.getElementById("password").style.borderColor = "red";
+        }
+      }
     });
 };
 let logoutButton = document.getElementsByClassName("logoutButton")[0];
