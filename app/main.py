@@ -32,7 +32,7 @@ def index():
 
 @app.route('/login', methods=['POST'])
 def login():
-    from db import user
+    from app.db import user
     content = request.get_json()
     userctx = user()
     userName = userctx.getItem(content['username'])
@@ -84,7 +84,7 @@ def register():
     password = str(content['password'])
     # print(fullname, username, password)
     if (len(fullname) != 0 or len(username) != 0 or len(password) != 0):
-        from db import user
+        from app.db import user
         userCreate = user()
         userCreate.save(fullname, username, password)
         # setUser(fullname, username, password)
@@ -100,7 +100,3 @@ def test():
     data = request.get_json()
     print(data)
     return jsonify(data)
-
-
-if __name__ == "__main__":
-    app.run(debug=True)

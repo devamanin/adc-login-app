@@ -1,6 +1,5 @@
 from firebase_admin import firestore, credentials, initialize_app
 import secrets
-
 cred = credentials.Certificate('key.json')
 intapp = initialize_app(cred)
 datab = firestore.client()
