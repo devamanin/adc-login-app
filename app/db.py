@@ -1,11 +1,19 @@
 from firebase_admin import firestore, credentials, initialize_app
+# from flask import jsonify
+
 import secrets
-cred = credentials.Certificate('key.json')
+try:
+    import config
+    cred = credentials.Certificate(config.FKEY)
+except:
+    import os
+    cred = credentials.Certificate(os.environ.get('GOOGLE_APPLICATION_CREDENTIALS', None))
+
 intapp = initialize_app(cred)
 datab = firestore.client()
 
 
-class user:
+class Userg:
     def __init__(self, name="", email="", password=""):
         self.fullname = name
         self.email = email

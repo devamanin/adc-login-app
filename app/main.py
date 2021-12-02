@@ -1,6 +1,7 @@
-from app.db import user
+from app.db import Userg
 from os import stat
-from flask import Flask, json, render_template, request, jsonify, url_for, redirect
+from flask import Flask, json, render_template, request, jsonify, url_for, redirect, current_app
+from firebase_admin import firestore, credentials, initialize_app
 import flask_login
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -9,16 +10,11 @@ app.secret_key = "super secret string"
 login_manager = flask_login.LoginManager()
 login_manager.init_app(app)
 
-
 class User(flask_login.UserMixin):
     pass
 
-
 @login_manager.user_loader
 def user_loader(username):
-    # if username not in users:
-    #     return
-
     user = User()
     user.id = username
     return user
@@ -26,22 +22,26 @@ def user_loader(username):
 
 @app.route('/', methods=['GET', 'POST'])
 def index():
-    user = {'username': 'devamanin', 'name': 'Aman'}
-    return render_template('index/index.html',)
-
+    if not flask_login.current_user.is_authenticated:
+        return render_template('index/index.html')
+    else:
+        userctx = Userg()
+        userName = userctx.getItem(flask_login.current_user.id)
+        fullname = userctx.fullname
+        return render_template('index/index.html', user={'username':flask_login.current_user.id, 'name':fullname})
 
 @app.route('/login', methods=['POST'])
 def login():
-    from app.db import user
+    userctx = Userg()
+    # from app.db import user
     content = request.get_json()
-    userctx = user()
     if (content):
-        username = content['username']
+        username = str(content['username']).upper()
         password = content['password']
     else:
-        username = request.form['username']
+        username = (request.form['username']).upper()
         password = request.form['password']
-    userName = userctx.getItem(content['username'])
+    userName = userctx.getItem((content['username']).upper())
     passwordCheck = check_password_hash(userctx.password, password)
     if userName and passwordCheck:
         username = username
@@ -53,16 +53,18 @@ def login():
     else:
         return jsonify({'status': 'failed'})
 
+# @login_manager.unauthorized_handler
+# def unauthorized():
+#     return "You're not allowed to login"
 
-@app.route('/user')
-@flask_login.login_required
-def user():
-    from app.db import user
-    userctx = user()
-    userName = userctx.getItem(flask_login.current_user.id)
-    fullname = userctx.fullname
-    return render_template('index/user.html', user={'username': flask_login.current_user.id, 'name': fullname})
-
+# @app.route('/user')
+# @flask_login.login_required
+# def user():
+#     from app.db import user
+#     userctx = user()
+#     userName = userctx.getItem(flask_login.current_user.id)
+#     fullname = userctx.fullname
+#     return render_template('index/index.html', user={'username':flask_login.current_user.id, 'name':fullname})
 
 @app.route('/logout', methods=['POST'])
 def logout():
@@ -74,12 +76,11 @@ def logout():
 def register():
     content = request.get_json()
     fullname = str(content['fullname'])
-    username = str(content['username'])
+    username = str(content['username']).upper()
     password = str(content['password'])
     passwordHash = generate_password_hash(password, 'sha256')
     if (len(fullname) != 0 or len(username) != 0 or len(password) != 0):
-        from app.db import user
-        userCreate = user()
+        userCreate = Userg()
         userCreate.save(fullname, username, passwordHash)
         return jsonify({'status': 'success'})
     else:
@@ -90,4 +91,3 @@ def register():
 def test():
     data = request.get_json()
     print(data)
-    return jsonify(data)

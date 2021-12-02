@@ -96,7 +96,7 @@ const loginContainer = () => {
           .then((data) => {
             if (data) {
               if (data["status"] == "success") {
-                window.location = "/user";
+                window.location = "/";
               } else {
                 document.getElementsByClassName("error")[0].style.visibility =
                   "visible";
